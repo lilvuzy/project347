@@ -81,7 +81,7 @@
 <!-- Custom script for fetching data and creating the chart -->
 <script>
     $(document).ready(function() {
-        $.getJSON('fetch_data.php', function(data) {
+        $.getJSON('database_connection.php', function(data) {
             let labels = [];
             let values = [];
 
