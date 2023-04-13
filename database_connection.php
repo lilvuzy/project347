@@ -4,7 +4,7 @@
 // Connection parameters
 $servername = "database347-do-user-13902082-0.b.db.ondigitalocean.com";
 $username = "doadmin";
-$password = "************************";
+$password = "AVNS_dGJG8cfh3XVCPJhdxjG";
 $port = 25060;
 $database = "defaultdb";
 $sslmode = "REQUIRED";
