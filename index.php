@@ -19,6 +19,9 @@
         }
     </style>
 
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <title>Full Stack App</title>
 </head>
 <body>
@@ -55,8 +58,28 @@
     <div class="row">
         <div class="col-md-12">
             <h1>Graph Data</h1>
-            <div id="graph-container" style="width:100%; height:400px;">
-            <script>
+            <div id="graph-container" style="width:100%; height:400px;"></div>
+        </div>
+    </div>
+</main>
+<!-- End Main Content -->
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <span class="text-muted">&copy; 2023 AppName. All rights reserved.</span>
+    </div>
+</footer>
+<!-- End Footer -->
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Custom script for fetching data and creating the chart -->
+<script>
     $(document).ready(function() {
         $.getJSON('fetch_data.php', function(data) {
             let labels = [];
@@ -92,28 +115,9 @@
     });
 </script>
 
-        </div>
-        </div>
-    </div>
-</main>
-<!-- End Main Content -->
-
-<!-- Footer -->
-<footer class="footer">
-    <div class="container">
-        <span class="text-muted">&copy; 2023 AppName. All rights reserved.</span>
-    </div>
-</footer>
-<!-- End Footer -->
-
-<!-- Optional JavaScript -->
-<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
 <!-- Font Awesome for Settings icon -->
 <script src="https://kit.fontawesome.com/a076d05399.js"></script>
 
 </body>
 </html>
+
