@@ -1,33 +1,22 @@
 <?php
-// database_connection.php
-
-// Connection parameters
 $servername = "database347-do-user-13902082-0.b.db.ondigitalocean.com";
+$port = 25060;
 $username = "doadmin";
 $password = "AVNS_dGJG8cfh3XVCPJhdxjG";
-$port = 25060;
-$database = "defaultdb";
-$sslmode = "REQUIRED";
+$dbname = "defaultdb";
 
-// Create connection
-$conn = mysqli_init();
+$conn = new mysqli($servername, $username, $password, $dbname, $port);
 
-// Require SSL for connection
-mysqli_ssl_set($conn, NULL, NULL, NULL, NULL, $sslmode);
-
-// Connect to the database
-if (!mysqli_real_connect($conn, $servername, $username, $password, $database, $port)) {
-    die("Connection failed: " . mysqli_connect_error());
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
 }
 
-// Check connection
-if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
-}
-
-echo "Connected successfully";
-
-// Close the connection
-mysqli_close($conn);
-
+// Enable SSL connection
+$conn->ssl_set(
+    NULL, // key
+    NULL, // cert
+    NULL, // ca
+    NULL, // capath
+    'REQUIRED' // cipher
+);
 ?>
