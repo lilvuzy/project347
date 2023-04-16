@@ -15,6 +15,9 @@ if (isset($_SESSION['user_id'])) {
 </head>
 <body>
     <h2>Login</h2>
+    <?php if (isset($_GET['error'])): ?>
+        <p style="color: red;"><?php echo htmlspecialchars($_GET['error']); ?></p>
+    <?php endif; ?>
     <form action="login.php" method="post">
         <label>Email:</label>
         <input type="email" name="user_email" required>
