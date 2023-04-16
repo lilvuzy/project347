@@ -1,44 +1,97 @@
 <?php
-session_start();
-if (isset($_SESSION['user_id'])) {
-    header('Location: index.php');
-    exit();
+//login.php
+
+include("database_connection.php");
+
+if(isset($_COOKIE["type"]))
+{
+ header("location:index.php");
 }
-require_once('database_connection.php');
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-    $query = "SELECT * FROM user_details WHERE user_email='$email'";
-    $result = mysqli_query($connection, $query);
-    if (mysqli_num_rows($result) == 1) {
-        $user = mysqli_fetch_assoc($result);
-        if (password_verify($password, $user['user_password'])) {
-            $_SESSION['user_id'] = $user['user_id'];
-            $_SESSION['user_email'] = $user['user_email'];
-            $_SESSION['user_fname'] = $user['user_fname'];
-            $_SESSION['user_lname'] = $user['user_lname'];
-            header('Location: index.php');
-            exit();
-        }
+
+$message = '';
+
+if(isset($_POST["login"]))
+{
+ if(empty($_POST["user_email"]) || empty($_POST["user_password"]))
+ {
+  $message = "<div class='alert alert-danger'>Both Fields are required</div>";
+ }
+ else
+ {
+  $query = "
+  SELECT * FROM user_details 
+  WHERE user_email = :user_email
+  ";
+  $statement = $connect->prepare($query);
+  $statement->execute(
+   array(
+    'user_email' => $_POST["user_email"]
+   )
+  );
+  $count = $statement->rowCount();
+  if($count > 0)
+  {
+   $result = $statement->fetchAll();
+   foreach($result as $row)
+   {
+    if(password_verify($_POST["user_password"], $row["user_password"]))
+    {
+     setcookie("type", $row["user_type"], time()+3600);
+     header("location:index.php");
     }
-    $error = "Invalid email or password";
+    else
+    {
+     $message = '<div class="alert alert-danger">Wrong Password</div>';
+    }
+   }
+  }
+  else
+  {
+   $message = "<div class='alert alert-danger'>Wrong Email Address</div>";
+  }
+ }
 }
+
+
 ?>
+
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Login</title>
-</head>
-<body>
-    <?php if (isset($error)) echo "<p>$error</p>"; ?>
-    <form method="POST" action="">
-        <label>Email</label>
-        <input type="text" name="email">
-        <br>
-        <label>Password</label>
-        <input type="password" name="password">
-        <br>
-        <button type="submit">Login</button>
-    </form>
-</body>
+ <head>
+  <title>How to create PHP Login Script using Cookies</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+ </head>
+ <body>
+  <br />
+  <div class="container">
+   <h2 align="center">How to create PHP Login Script using Cookies</h2>
+   <br />
+   <div class="panel panel-default">
+
+    <div class="panel-heading">Login</div>
+    <div class="panel-body">
+     <span><?php echo $message; ?></span>
+     <form method="post">
+      <div class="form-group">
+       <label>User Email</label>
+       <input type="text" name="user_email" id="user_email" class="form-control" />
+      </div>
+      <div class="form-group">
+       <label>Password</label>
+       <input type="password" name="user_password" id="user_password" class="form-control" />
+      </div>
+      <div class="form-group">
+       <input type="submit" name="login" id="login" class="btn btn-info" value="Login" />
+      </div>
+     </form>
+    </div>
+   </div>
+   <br />
+   <p>Admin email - PrincessL@rebels.com</p>
+   <p>Admin Password - password</p>
+   <p>All user password is 'password'</p>
+  </div>
+ </body>
 </html>
