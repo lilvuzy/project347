@@ -13,10 +13,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (mysqli_num_rows($result) == 1) {
         $user = mysqli_fetch_assoc($result);
         if (password_verify($password, $user['user_password'])) {
-            $_SESSION['user_id'] = $user['user_id'];
+            
             $_SESSION['user_email'] = $user['user_email'];
-            $_SESSION['user_fname'] = $user['user_fname'];
-            $_SESSION['user_lname'] = $user['user_lname'];
+            
+            
             header('Location: index.php');
             exit();
         }
