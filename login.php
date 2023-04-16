@@ -1,7 +1,7 @@
 <?php
 //login.php
 
-include("database_connection.php");
+require_once("database_connection.php");
 
 if(isset($_COOKIE["type"]))
 {
