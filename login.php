@@ -58,7 +58,7 @@ if(isset($_POST["login"]))
 <!DOCTYPE html>
 <html>
  <head>
-  <title>How to create PHP Login Script using Cookies</title>
+  <title>Yavuz Login</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -66,7 +66,7 @@ if(isset($_POST["login"]))
  <body>
   <br />
   <div class="container">
-   <h2 align="center">How to create PHP Login Script using Cookies</h2>
+   <h2 align="center">Log In to Yavuz's 347 Project</h2>
    <br />
    <div class="panel panel-default">
 
@@ -89,7 +89,7 @@ if(isset($_POST["login"]))
     </div>
    </div>
    <br />
-   <p>Admin email - PrincessL@rebels.com</p>
+   <p>Admin email - admin@email.com</p>
    <p>Admin Password - password</p>
    <p>All user password is 'password'</p>
   </div>
