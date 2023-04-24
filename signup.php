@@ -56,6 +56,16 @@ if (isset($_POST["signup"])) {
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
  </head>
  <body>
+
+ <nav class="navbar bg-body-tertiary">
+      <div class="container-fluid">
+        <a href="index.php" class="navbar-brand">Sales Forecaster</a>
+        <a href="login.php" class="d-flex">
+          Log In
+        </a>
+      </div>
+</nav>
+
   <br />
   <div class="container">
    <h2 align="center">Sign Up for Yavuz's 347 Project</h2>

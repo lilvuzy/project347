@@ -66,6 +66,16 @@ if(isset($_POST["login"]))
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
  </head>
  <body>
+ <nav class="navbar bg-body-tertiary">
+      <div class="container-fluid">
+        <a href="index.php" class="navbar-brand">Sales Forecaster</a>
+        <a href="signup.php" class="d-flex">
+          Sign Up
+        </a>
+      </div>
+    </nav>
+
+
   <br />
   <div class="container">
    <h2 align="center">Log In to Yavuz's 347 Project</h2>
@@ -84,7 +94,6 @@ if(isset($_POST["login"]))
        <label>Password</label>
        <input type="password" name="user_password" id="user_password" class="form-control"/>
       </div>
-      <a href="signup.php">Sign Up</a>
       <div class="form-group">
        <input type="submit" name="login" id="login" class="btn btn-info" value="Login" />
       </div>
