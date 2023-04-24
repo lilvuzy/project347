@@ -1,4 +1,9 @@
 <?php
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 require_once("database_connection.php");
 
 $message = '';
@@ -33,6 +38,8 @@ if (isset($_POST["signup"])) {
                 )
             );
             $message = "<div class='alert alert-success'>Registration Completed</div>";
+            header("Refresh: 3; url=login.php"); // Redirect the user to the login page after 3 seconds
+
         } else {
             $message = "<div class='alert alert-danger'>Email Address already exists</div>";
         }
