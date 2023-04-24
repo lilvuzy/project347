@@ -68,10 +68,9 @@ if (isset($_POST["signup"])) {
 
   <br />
   <div class="container">
-   <h2 align="center">Sign Up for Yavuz's 347 Project</h2>
+   <h2 align="center">Sign Up</h2>
    <br />
    <div class="panel panel-default">
-    <div class="panel-heading">Sign Up</div>
     <div class="panel-body">
      <span><?php echo $message; ?></span>
      <form method="post">

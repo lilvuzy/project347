@@ -78,28 +78,26 @@ if(isset($_POST["login"]))
 
   <br />
   <div class="container">
-   <h2 align="center">Log In to Yavuz's 347 Project</h2>
+   <h2 align="center">Log In</h2>
    <br />
-   <div class="panel panel-default">
-
-    <div class="panel-heading">Login</div>
-    <div class="panel-body">
-     <span><?php echo $message; ?></span>
-     <form method="post">
-      <div class="form-group">
-       <label>User Email</label>
-       <input type="text" name="user_email" id="user_email" class="form-control" />
-      </div>
-      <div class="form-group">
-       <label>Password</label>
-       <input type="password" name="user_password" id="user_password" class="form-control"/>
-      </div>
-      <div class="form-group">
-       <input type="submit" name="login" id="login" class="btn btn-info" value="Login" />
-      </div>
-     </form>
+   <div class="panel panel-default">    
+        <div class="panel-body">
+        <span><?php echo $message; ?></span>
+        <form method="post">
+        <div class="form-group">
+        <label>User Email</label>
+        <input type="text" name="user_email" id="user_email" class="form-control" />
+        </div>
+        <div class="form-group">
+        <label>Password</label>
+        <input type="password" name="user_password" id="user_password" class="form-control"/>
+        </div>
+        <div class="form-group">
+        <input type="submit" name="login" id="login" class="btn btn-info" value="Login" />
+        </div>
+        </form>
+        </div>
     </div>
-   </div>
    <br />
    <p>Admin email - admin@email.com</p>
    <p>Admin Password - password</p>
