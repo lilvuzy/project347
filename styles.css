@@ -1,0 +1,28 @@
+.navbar {
+    background-color: #1d3557;
+}
+.nav-link {
+    color: #f1faee;
+}
+.nav-link:hover {
+    color: #e63946;
+}
+.user-tab {
+    color: #f1faee;
+    cursor: pointer;
+}
+.user-tab:hover {
+    color: #e63946;
+}
+html {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+.content {
+    flex: 1;
+}
