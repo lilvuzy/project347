@@ -9,15 +9,9 @@ function fetchUserProductCount($pdo, $user_id) {
     return $stmt->fetchColumn();
 }
 
-function fetchUserForecastCount($pdo, $user_id) {
-    $sql = "SELECT COUNT(id) as forecast_count FROM products WHERE user_id = ? AND forecast IS NOT NULL";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([$user_id]);
-    return $stmt->fetchColumn();
-}
+
 
 $product_count = fetchUserProductCount($pdo, $_SESSION["id"]);
-$forecast_count = fetchUserForecastCount($pdo, $_SESSION["id"]);
 
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     header("location: login.php");
@@ -51,15 +45,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Forecasts Created</h5>
-                        <p class="card-text"><?php echo $forecast_count; ?></p>
-                        <a href="forecasts.php" class="btn btn-primary">View Forecasts</a>
-                    </div>
-                </div>
-            </div>
+            
         </div>
     </div>
     

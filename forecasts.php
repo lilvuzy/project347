@@ -3,76 +3,37 @@
 session_start();
  // Include the config file
 require_once "config.php";
+function getSalesData($pdo, $product_id) {
+    // Build the SQL query
+    $query = "SELECT year, month, units_sold FROM sales_data WHERE product_id = :product_id AND units_sold IS NOT NULL ORDER BY year, month";
+
+    // Prepare the query
+    $stmt = $pdo->prepare($query);
+
+    // Bind the product ID parameter
+    $stmt->bindParam(':product_id', $product_id, PDO::PARAM_INT);
+
+    // Execute the query
+    $stmt->execute();
+
+    // Build an array of sales data
+    $sales_data = array();
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $sales_data[] = $row;
+    }
+    return $sales_data;
+}
+
  // Check if the user is logged in, if not redirect them to the login page
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     header("location: login.php");
     exit;
-}
- // Function to calculate the forecast based on sales data
-function createForecast($sales_data) {
-    return array_sum($sales_data) / count($sales_data);
-}
- // Function to get the previous 12 months
-function getPreviousMonths($n) {
-    $months = [];
-    $currentMonth = new DateTime('first day of this month');
-    for ($i = 0; $i < $n; $i++) {
-        $currentMonth->modify('-1 month');
-        $months[] = $currentMonth->format('F Y');
-    }
-    return array_reverse($months);
 }
  // Get all products from the database
 $sql = "SELECT id, product_name FROM products WHERE user_id = ?";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([$_SESSION["id"]]);
 $products = $stmt->fetchAll();
- // If the form is submitted
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // If the create forecast button is clicked
-    if (isset($_POST["create_forecast"])) {
-        // Get the product ID and sales data
-        $product_id = intval($_POST["product_id"]);
-        $sales_data = array_map('intval', $_POST["sales_data"]);
-         // Calculate the forecast
-        $forecast = createForecast($sales_data);
-         // Update the forecast in the database
-        $sql = "UPDATE products SET forecast = ? WHERE id = ? AND user_id = ?";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$forecast, $product_id, $_SESSION["id"]]);
-         // Get the previous 12 months
-        $previousMonths = getPreviousMonths(12);
-         // Insert the sales data into the database
-        $sql = "INSERT INTO sales_data (product_id, month, year, units_sold) VALUES (?, ?, ?, ?)";
-        $stmt = $pdo->prepare($sql);
-        for ($i = 0; $i < 12; $i++) {
-            $monthYear = DateTime::createFromFormat('F Y', $previousMonths[$i]);
-            $month = (int)$monthYear->format('m');
-            $year = (int)$monthYear->format('Y');
-            $stmt->execute([$product_id, $month, $year, $sales_data[$i]]);
-        }
-         // Redirect to the forecasts page
-        header("location: forecasts.php");
-    } elseif (isset($_POST["delete_forecast"])) { // If the delete forecast button is clicked
-        // Get the product ID
-        $product_id = intval($_POST["product_id"]);
-         // Set the forecast to null in the database
-        $sql = "UPDATE products SET forecast = NULL WHERE id = ? AND user_id = ?";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$product_id, $_SESSION["id"]]);
-         // Delete the sales data from the database
-        $sql = "DELETE FROM sales_data WHERE product_id = ?";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$product_id]);
-         // Redirect to the forecasts page
-        header("location: forecasts.php");
-    }
-}
- // Get all products and forecasts from the database
-$sql = "SELECT id, product_name, forecast FROM products WHERE user_id = ?";
-$stmt = $pdo->prepare($sql);
-$stmt->execute([$_SESSION["id"]]);
-$products_forecasts = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -87,55 +48,138 @@ $products_forecasts = $stmt->fetchAll();
     <?php include_once "navbar.php"; ?>
     <div class="container mt-4">
         <h1>Forecasts</h1>
-        <form action="forecasts.php" method="post">
-            <div class="form-group">
-                <label for="product_id">Select Product:</label>
-                <select name="product_id" id="product_id" class="form-control" required>
-                    <?php foreach ($products as $product): ?>
-                        <option value="<?= $product["id"] ?>"><?= htmlspecialchars($product["product_name"]) ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Enter Previous 12 Months of Sales Data (units sold per month):</label>
-                <?php for ($i = 1; $i <= 12; $i++): ?>
-                    <input type="number" name="sales_data[]" class="form-control" required>
-                <?php endfor; ?>
-            </div>
-            <button type="submit" name="create_forecast" class="btn btn-primary">Create Forecast</button>
-        </form>
     </div>
     <div class="container mt-4">
-        <h1>Your Forecasts</h1>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Product</th>
-                    <th>Forecast</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($products_forecasts as $product_forecast) : ?>
-                    <?php if ($product_forecast["forecast"] !== null) : ?>
-                        <tr>
-                            <td><?= htmlspecialchars($product_forecast["product_name"]) ?></td>
-                            <td><?= htmlspecialchars($product_forecast["forecast"]) ?></td>
-                            <td>
-                                <form action="forecasts.php" method="post">
-                                    <input type="hidden" name="product_id" value="<?= $product_forecast["id"] ?>">
-                                    <button type="submit" name="delete_forecast" class="btn btn-danger">Delete Forecast</button>
-                                </form>
-                            </td>
-                        </tr>
-                    <?php endif; ?>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+        <div class="list-group">
+            <?php foreach ($products as $product) : ?>
+                <div class="list-group-item">
+                    <div class="row">
+                        <div class="col">
+                            <?= htmlspecialchars($product["product_name"]) ?>
+                        </div>
+                        <div class="col">
+                            <select name="forecast_model" id="forecast_model_<?= $product["id"] ?>" class="form-control forecast-model" onchange="updateForecast(<?= $product["id"] ?>, this.value)">
+                                <option value="average">Moving Average</option>
+                                <option value="exponential_smoothing">Exponential Smoothing</option>
+                                <option value="seasonal_index">Seasonal Index</option>
+                                <option value="linear_regression">Linear Regression</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col forecast-result" id="forecast_result_<?= $product["id"] ?>">
+                            -
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
     </div>
     <?php include_once "footer.php"; ?>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+
+    const productSalesData = <?= json_encode(array_map(function($product) use ($pdo) {
+        return [
+            'id' => $product['id'],
+            'data' => getSalesData($pdo, $product['id'])
+        ];
+    }, $products)) ?>;
+
+    function updateForecast(productId, model) {
+        const salesData = productSalesData.find(product => product.id === productId)?.data || [];
+        let forecast;
+        const now = new Date();
+        let currentYear = now.getFullYear();
+        let currentMonth = now.getMonth()+1;
+
+        const nextMonth = getNextMonth(currentYear, currentMonth);
+
+        switch (model) {
+            case 'average':
+                forecast = calculateMovingAverage(salesData);
+                break;
+            case 'exponential_smoothing':
+                forecast = calculateExponentialSmoothing(salesData);
+                break;
+            case 'seasonal_index':
+                // Assuming season length is 3 months
+                forecast = calculateSeasonalIndex(salesData, 3);
+                break;
+            case 'linear_regression':
+                forecast = calculateLinearRegression(salesData);
+                break;
+            default:
+                forecast = 'Unknown model';
+        }
+
+    let forecastText = '';
+    if (model == 'seasonal_index') {
+        forecastText = `${getMonthName(currentMonth)} ${getMonthName(currentMonth + 1)} ${getMonthName(currentMonth + 2)} ${currentYear}: ${forecast}`;
+    } else {
+        forecastText = `${getMonthName(currentMonth)} ${currentYear}: ${forecast}`;
+    }
+    
+    document.getElementById(`forecast_result_${productId}`).innerText = forecastText;
+}
+
+
+
+    function getNextMonth(year, month) {
+        if (month === 12) {
+            return { year: year + 1, month: 1 };
+        }
+        return { year: year, month: month + 1 };
+    }
+
+    function getMonthName(month) {
+        const monthNames = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+        return monthNames[month - 1];
+    }
+
+    function calculateMovingAverage(salesData) {
+        const totalMonths = salesData.length;
+        const totalSales = salesData.reduce((sum, data) => sum + data.units_sold, 0);
+        return (totalSales / totalMonths).toFixed(2);
+    }
+
+    function calculateExponentialSmoothing(salesData, alpha = 0.5) {
+        let smoothedValue = salesData[0]?.units_sold || 0;
+        for (let i = 1; i < salesData.length; i++) {
+            smoothedValue = alpha * salesData[i].units_sold + (1 - alpha) * smoothedValue;
+        }
+        return smoothedValue.toFixed(2);
+    }
+
+    function calculateSeasonalIndex(salesData, seasonLength) {
+        let averageSales = Array(seasonLength).fill(0);
+        let seasonCount = Array(seasonLength).fill(0);
+        for (let i = 0; i < salesData.length; i++) {
+            averageSales[i % seasonLength] += salesData[i].units_sold;
+            seasonCount[i % seasonLength]++;
+        }
+        const seasonalIndex = averageSales.map((total, index) => (total / seasonCount[index]).toFixed(2));
+        return seasonalIndex;
+    }
+
+    function calculateLinearRegression(salesData) {
+        const n = salesData.length;
+        const x = salesData.map((_, i) => i);
+        const sumX = x.reduce((a, b) => a + b, 0);
+        const sumY = salesData.reduce((sum, data) => sum + data.units_sold, 0);
+        const sumXY = salesData.reduce((sum, data, i) => sum + x[i] * data.units_sold, 0);
+        const sumXSquare = x.reduce((a, b) => a + b * b, 0);
+        const slope = (n * sumXY - sumX * sumY) / (n * sumXSquare - sumX * sumX);
+        const intercept = (sumY - slope * sumX) / n;
+        const forecast = intercept + slope * n;
+        return forecast.toFixed(2);
+    }
+</script>
+
 </body>
 </html>
